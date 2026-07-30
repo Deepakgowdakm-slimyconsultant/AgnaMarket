@@ -1,0 +1,35 @@
+name: Refresh Karnataka mandi reference list
+
+on:
+  schedule:
+    - cron: "0 3 * * 1"  # Every Monday, 3 AM UTC
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Refresh mandi list
+        env:
+          DATA_GOV_IN_API_KEY: ${{ secrets.DATA_GOV_IN_API_KEY }}
+        run: python scripts/refresh_reference_lists.py
+
+      - name: Commit updated mandi list
+        run: |
+          git config user.name "AgnaMarket Bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add config/mandis_karnataka.json
+          git diff --cached --quiet || git commit -m "Refresh Karnataka mandi list [automated]"
+          git push
