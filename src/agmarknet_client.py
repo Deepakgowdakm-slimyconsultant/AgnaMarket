@@ -23,6 +23,7 @@ from __future__ import annotations
 
 import os
 import json
+import time
 import urllib.request
 import urllib.parse
 from dataclasses import dataclass
@@ -35,6 +36,30 @@ BASE_URL = f"https://api.data.gov.in/resource/{RESOURCE_ID}"
 # Public sample key. Rate-limited to ~10 records/call. Used only as a
 # last-resort fallback so the script never hard-crashes with no key set.
 FALLBACK_SAMPLE_KEY = "579b464db66ec23bdd000001cdd3946e44ce4aad7209ff7b23ac571b"
+
+# data.gov.in is a government server that's occasionally slow, not always
+# a hard failure. We give it more time and a couple of retries before
+# genuinely giving up, rather than failing the whole run on one slow response.
+REQUEST_TIMEOUT_SECONDS = 45
+MAX_ATTEMPTS = 3
+RETRY_BACKOFF_SECONDS = 8
+
+
+def _fetch_url(url: str) -> str:
+    """GET a URL with retries. Raises RuntimeError only after every
+    attempt has failed."""
+    last_error: Exception | None = None
+    for attempt in range(1, MAX_ATTEMPTS + 1):
+        try:
+            with urllib.request.urlopen(url, timeout=REQUEST_TIMEOUT_SECONDS) as resp:
+                return resp.read().decode("utf-8")
+        except Exception as exc:  # noqa: BLE001 — deliberately broad, we retry regardless of cause
+            last_error = exc
+            if attempt < MAX_ATTEMPTS:
+                time.sleep(RETRY_BACKOFF_SECONDS)
+    raise RuntimeError(
+        f"Agmarknet API request failed after {MAX_ATTEMPTS} attempts: {last_error}"
+    ) from last_error
 
 
 @dataclass
@@ -111,10 +136,9 @@ def fetch_prices(
     url = f"{BASE_URL}?{urllib.parse.urlencode(params)}"
 
     try:
-        with urllib.request.urlopen(url, timeout=20) as resp:
-            raw = resp.read().decode("utf-8")
-    except Exception as exc:  # noqa: BLE001 — we want to wrap and re-raise
-        raise RuntimeError(f"Agmarknet API request failed: {exc}") from exc
+        raw = _fetch_url(url)
+    except RuntimeError:
+        raise
 
     try:
         payload = json.loads(raw)
@@ -148,7 +172,7 @@ def fetch_prices(
     return records
 
 
-def fetch_distinct_markets(state: str = "Karnataka", limit: int = 1000) -> list[dict]:
+def fetch_distinct_markets(state: str = "Karnataka", limit: int = 500) -> list[dict]:
     """Pull a broad sample of records for the state and derive the distinct
     (district, market) pairs actually present in the live data. Used by
     refresh_reference_lists.py to keep config/mandis_karnataka.json honest.
@@ -161,8 +185,8 @@ def fetch_distinct_markets(state: str = "Karnataka", limit: int = 1000) -> list[
     }
     url = f"{BASE_URL}?{urllib.parse.urlencode(params)}"
 
-    with urllib.request.urlopen(url, timeout=30) as resp:
-        payload = json.loads(resp.read().decode("utf-8"))
+    raw = _fetch_url(url)
+    payload = json.loads(raw)
 
     seen = set()
     out = []
