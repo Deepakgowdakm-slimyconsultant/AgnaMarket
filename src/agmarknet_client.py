@@ -149,25 +149,37 @@ def fetch_prices(
     records: list[MandiPriceRecord] = []
     for r in records_raw:
         try:
-            records.append(
-                MandiPriceRecord(
-                    state=r.get("state", ""),
-                    district=r.get("district", ""),
-                    market=r.get("market", ""),
-                    commodity=r.get("commodity", ""),
-                    variety=r.get("variety", ""),
-                    grade=r.get("grade", ""),
-                    arrival_date=r.get("arrival_date", ""),
-                    min_price=float(r.get("min_price", 0) or 0),
-                    max_price=float(r.get("max_price", 0) or 0),
-                    modal_price=float(r.get("modal_price", 0) or 0),
-                )
+            rec = MandiPriceRecord(
+                state=r.get("state", ""),
+                district=r.get("district", ""),
+                market=r.get("market", ""),
+                commodity=r.get("commodity", ""),
+                variety=r.get("variety", ""),
+                grade=r.get("grade", ""),
+                arrival_date=r.get("arrival_date", ""),
+                min_price=float(r.get("min_price", 0) or 0),
+                max_price=float(r.get("max_price", 0) or 0),
+                modal_price=float(r.get("modal_price", 0) or 0),
             )
         except (TypeError, ValueError):
             # A single malformed row should never crash the whole fetch.
             # It just gets skipped — and will show up as "no data" for that
             # market rather than a wrong number.
             continue
+
+        # Defense-in-depth: we observed the live API's own server-side
+        # filters are not always reliably applied (a commodity filter can
+        # still return other commodities mixed in). We never trust that —
+        # we verify client-side that this record genuinely matches what
+        # was asked for before it's allowed anywhere near a farmer.
+        if rec.commodity.strip().lower() != commodity.strip().lower():
+            continue
+        if market and rec.market.strip().lower() != market.strip().lower():
+            continue
+        if rec.state.strip().lower() != state.strip().lower():
+            continue
+
+        records.append(rec)
 
     return records
 
