@@ -1,49 +1,169 @@
 {
   "_meta": {
-    "note": "Seed list only. Run scripts/refresh_reference_lists.py (via GitHub Actions, which has live internet access) to replace this with the full, current list of Karnataka markets straight from data.gov.in. Do not treat this seed list as exhaustive.",
+    "note": "Seed list, corrected against a live sample on 31 Jul 2026 to add the government dataset's \"APMC\" suffix convention and fix one known spelling (Davanagere -> Davangere). Still not exhaustively verified — run scripts/refresh_reference_lists.py via GitHub Actions to replace this with the full, current, authoritative list.",
     "last_refreshed": "SEED_DATA_NOT_YET_REFRESHED",
     "source": "https://api.data.gov.in/resource/9ef84268-d588-465a-a308-a864a43d0070"
   },
   "markets": [
-    {"district": "Bengaluru", "market": "Binny Mill (F&V) Bangalore"},
-    {"district": "Bengaluru", "market": "Yeshwanthpur (Dodballapur Road) Bangalore"},
-    {"district": "Bengaluru Rural", "market": "Doddaballapur"},
-    {"district": "Tumakuru", "market": "Tumkur"},
-    {"district": "Tumakuru", "market": "Tiptur"},
-    {"district": "Chitradurga", "market": "Chitradurga"},
-    {"district": "Chitradurga", "market": "Hiriyur"},
-    {"district": "Davanagere", "market": "Davanagere"},
-    {"district": "Davanagere", "market": "Harihar"},
-    {"district": "Shivamogga", "market": "Shimoga"},
-    {"district": "Shivamogga", "market": "Bhadravathi"},
-    {"district": "Hassan", "market": "Hassan"},
-    {"district": "Hassan", "market": "Arsikere"},
-    {"district": "Mysuru", "market": "Mysore"},
-    {"district": "Mysuru", "market": "Nanjangud"},
-    {"district": "Mandya", "market": "Mandya"},
-    {"district": "Mandya", "market": "Maddur"},
-    {"district": "Kolar", "market": "Kolar"},
-    {"district": "Kolar", "market": "Srinivaspur"},
-    {"district": "Chikkaballapur", "market": "Chikkaballapur"},
-    {"district": "Ramanagara", "market": "Ramanagaram"},
-    {"district": "Mangaluru (Dakshina Kannada)", "market": "Mangalore"},
-    {"district": "Udupi", "market": "Udupi"},
-    {"district": "Belagavi", "market": "Belgaum"},
-    {"district": "Hubballi-Dharwad", "market": "Hubli (Amaragol)"},
-    {"district": "Ballari", "market": "Bellary"},
-    {"district": "Kalaburagi", "market": "Gulbarga"},
-    {"district": "Vijayapura", "market": "Bijapur"},
-    {"district": "Raichur", "market": "Raichur"},
-    {"district": "Koppal", "market": "Koppal"},
-    {"district": "Bagalkot", "market": "Bagalkot"},
-    {"district": "Bidar", "market": "Bidar"},
-    {"district": "Yadgir", "market": "Yadgir"},
-    {"district": "Chikkamagaluru", "market": "Chikmagalur"},
-    {"district": "Kodagu", "market": "Madikeri"},
-    {"district": "Uttara Kannada", "market": "Sirsi"},
-    {"district": "Haveri", "market": "Haveri"},
-    {"district": "Gadag", "market": "Gadag"},
-    {"district": "Dharwad", "market": "Dharwad"},
-    {"district": "Chamarajanagar", "market": "Chamrajnagar"}
+    {
+      "district": "Bengaluru",
+      "market": "Binny Mill (F&V) Bangalore APMC"
+    },
+    {
+      "district": "Bengaluru",
+      "market": "Yeshwanthpur (Dodballapur Road) Bangalore APMC"
+    },
+    {
+      "district": "Bengaluru Rural",
+      "market": "Doddaballapur APMC"
+    },
+    {
+      "district": "Tumakuru",
+      "market": "Tumkur APMC"
+    },
+    {
+      "district": "Tumakuru",
+      "market": "Tiptur APMC"
+    },
+    {
+      "district": "Chitradurga",
+      "market": "Chitradurga APMC"
+    },
+    {
+      "district": "Chitradurga",
+      "market": "Hiriyur APMC"
+    },
+    {
+      "district": "Davanagere",
+      "market": "Davangere APMC"
+    },
+    {
+      "district": "Davanagere",
+      "market": "Harihar APMC"
+    },
+    {
+      "district": "Shivamogga",
+      "market": "Shimoga APMC"
+    },
+    {
+      "district": "Shivamogga",
+      "market": "Bhadravathi APMC"
+    },
+    {
+      "district": "Hassan",
+      "market": "Hassan APMC"
+    },
+    {
+      "district": "Hassan",
+      "market": "Arsikere APMC"
+    },
+    {
+      "district": "Mysuru",
+      "market": "Mysore APMC"
+    },
+    {
+      "district": "Mysuru",
+      "market": "Nanjangud APMC"
+    },
+    {
+      "district": "Mandya",
+      "market": "Mandya APMC"
+    },
+    {
+      "district": "Mandya",
+      "market": "Maddur APMC"
+    },
+    {
+      "district": "Kolar",
+      "market": "Kolar APMC"
+    },
+    {
+      "district": "Kolar",
+      "market": "Srinivaspur APMC"
+    },
+    {
+      "district": "Chikkaballapur",
+      "market": "Chikkaballapur APMC"
+    },
+    {
+      "district": "Ramanagara",
+      "market": "Ramanagaram APMC"
+    },
+    {
+      "district": "Mangaluru (Dakshina Kannada)",
+      "market": "Mangalore APMC"
+    },
+    {
+      "district": "Udupi",
+      "market": "Udupi APMC"
+    },
+    {
+      "district": "Belagavi",
+      "market": "Belgaum APMC"
+    },
+    {
+      "district": "Hubballi-Dharwad",
+      "market": "Hubli (Amaragol) APMC"
+    },
+    {
+      "district": "Ballari",
+      "market": "Bellary APMC"
+    },
+    {
+      "district": "Kalaburagi",
+      "market": "Gulbarga APMC"
+    },
+    {
+      "district": "Vijayapura",
+      "market": "Bijapur APMC"
+    },
+    {
+      "district": "Raichur",
+      "market": "Raichur APMC"
+    },
+    {
+      "district": "Koppal",
+      "market": "Koppal APMC"
+    },
+    {
+      "district": "Bagalkot",
+      "market": "Bagalkot APMC"
+    },
+    {
+      "district": "Bidar",
+      "market": "Bidar APMC"
+    },
+    {
+      "district": "Yadgir",
+      "market": "Yadgir APMC"
+    },
+    {
+      "district": "Chikkamagaluru",
+      "market": "Chikmagalur APMC"
+    },
+    {
+      "district": "Kodagu",
+      "market": "Madikeri APMC"
+    },
+    {
+      "district": "Uttara Kannada",
+      "market": "Sirsi APMC"
+    },
+    {
+      "district": "Haveri",
+      "market": "Haveri APMC"
+    },
+    {
+      "district": "Gadag",
+      "market": "Gadag APMC"
+    },
+    {
+      "district": "Dharwad",
+      "market": "Dharwad APMC"
+    },
+    {
+      "district": "Chamarajanagar",
+      "market": "Chamrajnagar APMC"
+    }
   ]
 }
