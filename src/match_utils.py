@@ -21,8 +21,8 @@ MANDI_CONFIG_PATH = Path(__file__).resolve().parent.parent / "config" / "mandis_
 # the Agmarknet dataset. Extend this over time — it's the single place that
 # needs updating when a new crop is added.
 CROP_ALIASES = {
-    "ragi": "Ragi (Finger Millet)/Nachni",
-    "nachni": "Ragi (Finger Millet)/Nachni",
+    "ragi": "Ragi(Finger Millet)",
+    "nachni": "Ragi(Finger Millet)",
     "arecanut": "Arecanut(Betelnut/Supari)",
     "areca": "Arecanut(Betelnut/Supari)",
     "supari": "Arecanut(Betelnut/Supari)",
@@ -62,34 +62,50 @@ def resolve_crop(user_text: str) -> Optional[str]:
     return CROP_ALIASES.get(key)
 
 
+def _strip_apmc(name: str) -> str:
+    """Government mandi names all end in 'APMC' (Agricultural Produce Market
+    Committee) — e.g. 'Tumkur APMC'. No farmer types that suffix, so we match
+    against the name with it removed, and only reattach it for the final
+    canonical result.
+    """
+    n = name.strip()
+    if n.lower().endswith(" apmc"):
+        return n[: -len(" apmc")].strip()
+    return n
+
+
 def resolve_mandi(user_text: str, cutoff: float = 0.6) -> tuple[Optional[str], list[str]]:
     """Try to resolve a farmer-typed mandi name to a canonical one.
 
     Returns (best_match_or_None, list_of_close_alternatives).
 
-    If the input is an exact (case-insensitive) match, returns it immediately
-    with high confidence. Otherwise, uses fuzzy matching but NEVER silently
-    picks a mandi the farmer didn't clearly mean — if the top match isn't
-    a strong one, best_match is None and the alternatives are returned so
-    the calling code can ask the farmer to confirm.
+    Matches against the mandi name with 'APMC' stripped first (since that's
+    what a farmer will actually type), falling back to the full name in case
+    someone types it out in full. NEVER silently picks a mandi the farmer
+    didn't clearly mean — if the top match isn't a strong one, best_match is
+    None and the alternatives are returned so the calling code can ask the
+    farmer to confirm.
     """
     names = _load_market_names()
-    lowered = {n.lower(): n for n in names}
+    full_lowered = {n.lower(): n for n in names}
+
+    short_to_full: dict[str, str] = {}
+    for n in names:
+        short_to_full.setdefault(_strip_apmc(n).lower(), n)
 
     key = user_text.strip().lower()
-    if key in lowered:
-        return lowered[key], []
 
-    close = difflib.get_close_matches(key, lowered.keys(), n=3, cutoff=cutoff)
-    if close and close[0] != key:
-        # Only auto-accept if the match is unambiguous (clearly closer than
-        # the second-best option). Otherwise surface all candidates.
-        scores = [
-            difflib.SequenceMatcher(None, key, c).ratio() for c in close
-        ]
+    if key in short_to_full:
+        return short_to_full[key], []
+    if key in full_lowered:
+        return full_lowered[key], []
+
+    close = difflib.get_close_matches(key, short_to_full.keys(), n=3, cutoff=cutoff)
+    if close:
+        scores = [difflib.SequenceMatcher(None, key, c).ratio() for c in close]
         if len(scores) == 1 or (scores[0] - scores[1] > 0.15):
-            return lowered[close[0]], [lowered[c] for c in close[1:]]
-        return None, [lowered[c] for c in close]
+            return short_to_full[close[0]], [short_to_full[c] for c in close[1:]]
+        return None, [short_to_full[c] for c in close]
 
     return None, []
 
