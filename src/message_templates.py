@@ -117,6 +117,12 @@ def stopped_all(lang: str = "en") -> str:
 
 def format_price_line(mandi: str, vp: ValidatedPrice, lang: str = "en") -> str:
     """One line of a daily alert message for a single mandi."""
+    if vp.status == "fetch_error":
+        return f"- {mandi}: " + (
+            "ಬೆಲೆ ಪರಿಶೀಲಿಸಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ (ಸಂಪರ್ಕ ಸಮಸ್ಯೆ), ಮುಂದಿನ ಬಾರಿ ಪ್ರಯತ್ನಿಸುತ್ತೇವೆ" if lang == "kn"
+            else "couldn't check the price just now (connection issue) — will retry next update"
+        )
+
     if vp.status == "no_data":
         return f"- {mandi}: " + ("ಬೆಲೆ ಲಭ್ಯವಿಲ್ಲ" if lang == "kn" else "no price data available")
 
