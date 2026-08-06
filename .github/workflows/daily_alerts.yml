@@ -2,9 +2,6 @@ name: Send daily mandi price alerts
 
 on:
   schedule:
-    # 7:30 AM IST = 02:00 UTC. Early enough that farmers see prices before
-    # heading out, late enough that the mandi's previous-day figures (or
-    # early-morning arrivals data, depending on the mandi) have settled.
     - cron: "0 2 * * *"
   workflow_dispatch: {}
 
@@ -36,6 +33,7 @@ jobs:
         run: |
           git config user.name "AgnaMarket Bot"
           git config user.email "actions@users.noreply.github.com"
-          git add data/price_history/
+          mkdir -p data/price_history
+          git add data/price_history/ 2>/dev/null || true
           git diff --cached --quiet || git commit -m "Update price history cache [automated]"
           git push
