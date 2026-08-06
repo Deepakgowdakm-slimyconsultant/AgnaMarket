@@ -40,9 +40,9 @@ FALLBACK_SAMPLE_KEY = "579b464db66ec23bdd000001cdd3946e44ce4aad7209ff7b23ac571b"
 # data.gov.in is a government server that's occasionally slow, not always
 # a hard failure. We give it more time and a couple of retries before
 # genuinely giving up, rather than failing the whole run on one slow response.
-REQUEST_TIMEOUT_SECONDS = 45
-MAX_ATTEMPTS = 3
-RETRY_BACKOFF_SECONDS = 8
+REQUEST_TIMEOUT_SECONDS =60 
+MAX_ATTEMPTS = 4
+RETRY_BACKOFF_SECONDS = 10
 
 
 def _fetch_url(url: str) -> str:
