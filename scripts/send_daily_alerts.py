@@ -59,15 +59,30 @@ _fetch_cache: dict[tuple[str, str], object] = {}
 
 
 def _get_validated_price(crop: str, mandi: str):
+    from src.data_validator import ValidatedPrice
+
     cache_key = (crop, mandi)
     if cache_key not in _fetch_cache:
         try:
             records = fetch_prices(commodity=crop, market=mandi)
         except RuntimeError as exc:
             print(f"WARNING: fetch failed for {crop} @ {mandi}: {exc}")
-            records = []
-        # If multiple varieties/grades exist for the same mandi+crop+day,
-        # take the most recent one reported.
+            # A network/API failure is NOT the same thing as "this mandi
+            # genuinely has no price today" — a farmer deserves to know
+            # which one happened, so we don't route this through
+            # validate_record(None, ...), which would say "never reported."
+            self_status = ValidatedPrice(
+                record=None,
+                status="fetch_error",
+                reason=(
+                    "Couldn't reach the price server just now (temporary "
+                    "connection issue). This isn't the same as the mandi "
+                    "having no price — we'll try again on the next update."
+                ),
+            )
+            _fetch_cache[cache_key] = self_status
+            return _fetch_cache[cache_key]
+
         record = records[0] if records else None
         history = _load_history(crop, mandi)
         validated = validate_record(record, history)
