@@ -2,8 +2,6 @@ name: Poll WhatsApp commands
 
 on:
   schedule:
-    # Every 20 minutes. Adjust if you want faster/slower responses to
-    # farmer commands vs GitHub Actions minutes used.
     - cron: "*/20 * * * *"
   workflow_dispatch: {}
 
@@ -35,6 +33,6 @@ jobs:
         run: |
           git config user.name "AgnaMarket Bot"
           git config user.email "actions@users.noreply.github.com"
-          git add data/subscribers.json data/.last_poll.txt
+          git add data/subscribers.json data/.last_poll.txt 2>/dev/null || true
           git diff --cached --quiet || git commit -m "Update subscribers [automated]"
           git push
