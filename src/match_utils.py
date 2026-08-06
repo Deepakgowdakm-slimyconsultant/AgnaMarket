@@ -17,9 +17,6 @@ from typing import Optional
 
 MANDI_CONFIG_PATH = Path(__file__).resolve().parent.parent / "config" / "mandis_karnataka.json"
 
-# A small set of common crop nicknames -> the exact commodity string used by
-# the Agmarknet dataset. Extend this over time — it's the single place that
-# needs updating when a new crop is added.
 CROP_ALIASES = {
     "ragi": "Ragi(Finger Millet)",
     "nachni": "Ragi(Finger Millet)",
@@ -53,21 +50,11 @@ def _load_market_names() -> list[str]:
 
 
 def resolve_crop(user_text: str) -> Optional[str]:
-    """Return the canonical commodity name for a casual crop name, or None
-    if we're not confident. Exact alias match only — deliberately NOT fuzzy,
-    because guessing the wrong crop is worse than asking the farmer to
-    retype it using HELP/CROPS.
-    """
     key = user_text.strip().lower()
     return CROP_ALIASES.get(key)
 
 
 def _strip_apmc(name: str) -> str:
-    """Government mandi names all end in 'APMC' (Agricultural Produce Market
-    Committee) — e.g. 'Tumkur APMC'. No farmer types that suffix, so we match
-    against the name with it removed, and only reattach it for the final
-    canonical result.
-    """
     n = name.strip()
     if n.lower().endswith(" apmc"):
         return n[: -len(" apmc")].strip()
@@ -75,17 +62,6 @@ def _strip_apmc(name: str) -> str:
 
 
 def resolve_mandi(user_text: str, cutoff: float = 0.6) -> tuple[Optional[str], list[str]]:
-    """Try to resolve a farmer-typed mandi name to a canonical one.
-
-    Returns (best_match_or_None, list_of_close_alternatives).
-
-    Matches against the mandi name with 'APMC' stripped first (since that's
-    what a farmer will actually type), falling back to the full name in case
-    someone types it out in full. NEVER silently picks a mandi the farmer
-    didn't clearly mean — if the top match isn't a strong one, best_match is
-    None and the alternatives are returned so the calling code can ask the
-    farmer to confirm.
-    """
     names = _load_market_names()
     full_lowered = {n.lower(): n for n in names}
 
